@@ -1,0 +1,83 @@
+version: "3.7"
+
+services:
+
+    prometheus:
+        container_name: prometheus
+        image: prom/prometheus:v2.1.0
+        volumes:
+            - ./prometheus/:/etc/prometheus/
+        #  - prometheus_data:/prometheus
+        command:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+            - "--web.console.templates=/usr/share/prometheus/consoles"
+        networks:
+            - mysql-network
+        ports:
+            - 9090:9090
+        restart: always
+
+    grafana:
+        container_name: grafana
+        image: grafana/grafana-oss:6.6.2
+        user: "472"
+        depends_on:
+            - prometheus
+        ports:
+            - 3000:3000
+        networks:
+            - mysql-network
+        volumes:
+            - grafana_data:/var/lib/grafana
+            - ./grafana/provisioning:/etc/grafana/provisioning
+        environment:
+            - GF_INSTALL_PLUGINS=natel-discrete-panel,digiapulssi-breadcrumb-panel,yesoreyeram-boomtable-panel
+        restart: always
+
+    mysql-exporter:
+        container_name: mysql-exporter
+        image: prom/mysqld-exporter
+        networks:
+            - mysql-network
+        ports:
+            - 9104:9104
+        depends_on:
+            - mysql_db
+        environment:
+            - DATA_SOURCE_NAME="exporter:exporter@(mysql_db:3306)/transactions"
+
+    mysql_db:
+        container_name: mysql_db
+        image: mysql:8
+        environment:
+            MYSQL_DATABASE: "db"
+            # Password for root access
+            MYSQL_ROOT_PASSWORD: "password"
+        volumes:
+            - my_db:/var/lib/mysql
+            # the init script runs in ascending order, so we rename to 1 and 2 to force
+            # database creation first, and then exporter user creation
+            - ./scripts/create_database.sql:/docker-entrypoint-initdb.d/1.sql
+            - ./scripts/create_exporter_user.sql:/docker-entrypoint-initdb.d/2.sql
+        networks:
+            - mysql-network
+        ports:
+            - 3306:3306
+        restart: always
+
+    #test_box:
+    #    container_name: testy_box
+    #    image: ubuntu:20.04
+    #    networks:
+    #        - mysql-network
+    #    entrypoint: ["sleep", "6000"]
+
+volumes:
+    grafana_data: {}
+    my_db: {}
+
+networks:
+    mysql-network:
+        driver: bridge

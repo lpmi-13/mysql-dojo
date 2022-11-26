@@ -1,0 +1,7 @@
+global:
+    scrape_interval: 5s
+
+scrape_configs:
+    - job_name: "mysql_database"
+      static_configs:
+          - targets: ["mysql-exporter:9104"]
