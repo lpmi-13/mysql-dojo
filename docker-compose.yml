@@ -1,7 +1,6 @@
 version: "3.7"
 
 services:
-
     prometheus:
         container_name: prometheus
         image: prom/prometheus:v2.1.0
@@ -38,7 +37,7 @@ services:
 
     mysql-exporter:
         container_name: mysql-exporter
-        image: prom/mysqld-exporter
+        image: prom/mysqld-exporter:v0.14.0
         networks:
             - mysql-network
         ports:
@@ -46,7 +45,7 @@ services:
         depends_on:
             - mysql_db
         environment:
-            - DATA_SOURCE_NAME="exporter:exporter@(mysql_db:3306)/transactions"
+            - DATA_SOURCE_NAME=exporter:exporter@(mysql_db:3306)/
 
     mysql_db:
         container_name: mysql_db
