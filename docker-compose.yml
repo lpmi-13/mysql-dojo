@@ -66,13 +66,6 @@ services:
             - 3306:3306
         restart: always
 
-    #test_box:
-    #    container_name: testy_box
-    #    image: ubuntu:20.04
-    #    networks:
-    #        - mysql-network
-    #    entrypoint: ["sleep", "6000"]
-
 volumes:
     grafana_data: {}
     my_db: {}
