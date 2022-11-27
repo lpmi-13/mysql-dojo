@@ -20,7 +20,7 @@ services:
 
     grafana:
         container_name: grafana
-        image: grafana/grafana-oss:6.6.2
+        image: grafana/grafana-oss:8.5.14
         user: "472"
         depends_on:
             - prometheus
