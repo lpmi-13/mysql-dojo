@@ -9,6 +9,7 @@ I recently realized that I have very little experience with MySQL, and I'd like 
 - see what the performance implications are for missing indexes
 - see what long-running queries look like in the systems graphs
 - see what effect different iops constraints have on what happens when the database is trying to do a lot of writes.
+- see what involves a metadata lock and what it looks like when that happens (https://www.alibabacloud.com/blog/generation-and-handling-of-metadata-locks-on-rds-for-mysql-tables_308797)
 
 ...and then also practice fixing all these things and making it faster.
 
