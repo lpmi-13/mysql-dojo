@@ -46,6 +46,14 @@ services:
             - mysql_db
         environment:
             - DATA_SOURCE_NAME=exporter:exporter@(mysql_db:3306)/
+            - --collect.binlog_size
+            - --collect.info_schema.processlist
+            - --collect.info_schema.tablestats
+            - --collect.info_schema.query_response_time
+            - --collect.perf_schema.eventswaits
+            - --collect.perf_schema.indexiowaits
+            - --collect.perf_schema.tableiowaits
+            - --collect.perf_schema.tablelocks
 
     mysql_db:
         container_name: mysql_db
