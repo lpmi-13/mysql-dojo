@@ -10,6 +10,7 @@ I recently realized that I have very little experience with MySQL, and I'd like 
 - see what long-running queries look like in the systems graphs
 - see what effect different iops constraints have on what happens when the database is trying to do a lot of writes.
 - see what involves a metadata lock and what it looks like when that happens (https://www.alibabacloud.com/blog/generation-and-handling-of-metadata-locks-on-rds-for-mysql-tables_308797)
+- see if we can trigger different types of problems with replication (https://aws.amazon.com/premiumsupport/knowledge-center/rds-mysql-high-replica-lag/), though this is going to complicate the setup a bit, but this is what a production workload would look like, so we should probably have a read replica anyway
 
 ...and then also practice fixing all these things and making it faster.
 
