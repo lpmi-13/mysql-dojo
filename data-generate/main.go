@@ -12,38 +12,45 @@ import (
 )
 
 type FakeData struct {
-	Name            string `faker:"name"`
-	UserName        string `faker:"username"`
-	Email           string `faker:"email"`
-	ReviewSubmitted string `faker:"timestamp"`
-	Review          string `faker:"paragraph"`
-	BusinessId      int    `faker:"boundary_start=1, boundary_end=10000"`
+	Currency          string `faker:"currency"`
+	Email             string `faker:"email"`
+	ReferralCode      string `faker:"uuid_hyphenated"`
+	ReferralSubmitted string `faker:"timestamp"`
+	Referree          string `faker:"name"`
+	Referrer          string `faker:"name"`
+	UserName          string `faker:"username"`
 }
 
-func main() {
+var NumberOfRecordsToLog = 10000
 
+func main() {
 	numberOfRecords, err := strconv.Atoi(os.Args[1])
 	// this is for making it easier to test locally vs running in a container
 	outPutDirectory := os.Args[2]
 
 	jsonData := []FakeData{}
+
 	for i := 0; i < numberOfRecords+1; i++ {
 		a := FakeData{}
+
 		err := faker.FakeData(&a)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 
 		if i%1000 == 0 {
-			fmt.Printf("generated record %d out of %d\n", i, numberOfRecords)
+			log.Printf("generated record %d out of %d\n", i, numberOfRecords)
 		}
+
 		jsonData = append(jsonData, a)
+
 		if i > 0 {
-			if (i % 100000) == 0 {
+			if (i % NumberOfRecordsToLog) == 0 {
 				comment := fmt.Sprintf("writing out to file: record-%d.json", i)
-				fmt.Println(comment)
+				log.Println(comment)
+
 				jsonBlob, _ := json.MarshalIndent(jsonData, "", " ")
-				_ = ioutil.WriteFile(fmt.Sprintf("%s/record-%d.json", outPutDirectory, i), jsonBlob, 0644)
+				_ = ioutil.WriteFile(fmt.Sprintf("%s/record-%d.json", outPutDirectory, i), jsonBlob, 0o644)
 				jsonData = []FakeData{}
 			}
 		}
@@ -52,5 +59,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Finished writing to file.")
+
+	log.Println("Finished writing to file.")
 }
