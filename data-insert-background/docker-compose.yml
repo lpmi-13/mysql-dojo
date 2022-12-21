@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  data-insert-background:
+    build: .
+    extra_hosts:
+      - "mysql_db:127.0.0.1"
+    network_mode: "host"

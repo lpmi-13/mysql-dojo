@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
+
+	"github.com/bxcodec/faker"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -22,50 +23,47 @@ type FakeData struct {
 }
 
 var (
-	ctx   = context.TODO()
-	delay = 300
+	ctx       = context.TODO()
+	BatchSize = 1000
+	db        *gorm.DB
+	err       error
 )
 
 func main() {
-	dsn := "root:password@tcp(127.0.0.1:3306)/transactions?charset=utf8mb4&parseTime=True&loc=Local"
+	host := os.Args[1]
+	totalRecords, _ := strconv.Atoi(os.Args[2])
+	dsn := "root:password@tcp(" + host + ":3306)/transactions?charset=utf8mb4&parseTime=True&loc=Local"
 
-	concurrentExecutions, _ := strconv.Atoi(os.Args[1])
-
-	ch := make(chan string)
-
-	for i := 0; i < concurrentExecutions; i++ {
-		go insertData(dsn, ch)
-	}
-
-	for {
-		go insertData(<-ch, ch)
-	}
-}
-
-func insertData(dsn string, ch chan string) {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	referral := FakeData{
-		Currency:          "dollars",
-		Email:             "yep@dep.com",
-		ReferralCode:      "292",
-		ReferralSubmitted: "yes",
-		Referree:          "doobie",
-		Referrer:          "scoobie",
-		Username:          "yeerrrps",
-	}
-
-	time.Sleep(time.Duration(delay) * time.Millisecond)
-
-	if err != nil {
-		log.Println("Connection Failed to Open")
-	} else {
-		log.Println("Connection Established")
-	}
-
-	err = db.Table("referrals").Create(referral).Error
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ch <- dsn
+	for i := 0; i < totalRecords; i++ {
+		InsertData()
+
+		if i%100 == 0 && i != 0 {
+			log.Println("created record:", i*BatchSize)
+		}
+	}
+}
+
+func InsertData() {
+	referralBatch := []FakeData{}
+
+	for i := 0; i < BatchSize; i++ {
+		referral := FakeData{}
+
+		err := faker.FakeData(&referral)
+		if err != nil {
+			log.Println(err)
+		}
+
+		referralBatch = append(referralBatch, referral)
+	}
+
+	err = db.Table("referrals").CreateInBatches(referralBatch, BatchSize).Error
+	if err != nil {
+		log.Fatal(err)
+	}
 }

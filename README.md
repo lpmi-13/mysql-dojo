@@ -31,3 +31,5 @@ docker-compose up -d
 ```
 
 and your dashboards should be available at `localhost:3000`.
+
+To insert some data, run the data insert container at `data-insert-background` via `docker-compose up --build`.

@@ -1,4 +1,4 @@
-module main
+module mysql-dojo/data-insert-background
 
 go 1.17
 
