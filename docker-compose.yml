@@ -35,6 +35,21 @@ services:
             - GF_INSTALL_PLUGINS=natel-discrete-panel,digiapulssi-breadcrumb-panel,yesoreyeram-boomtable-panel
         restart: always
 
+    cadvisor:
+        container_name: cadvisor
+        image: google/cadvisor
+        networks:
+            - mysql-network
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+        expose:
+            - 8080
+        ports:
+            - "8005:8080"
+
     mysql-exporter:
         container_name: mysql-exporter
         image: prom/mysqld-exporter:v0.14.0
@@ -47,11 +62,18 @@ services:
         environment:
             - DATA_SOURCE_NAME=exporter:exporter@(mysql_db:3306)/
             - --collect.binlog_size
+            - --collect.engine_innodb_status
+            - --collect.info_schema.innodb_metrics
+            - --collect.info_schema.innodb_tablespaces
             - --collect.info_schema.processlist
             - --collect.info_schema.tablestats
             - --collect.info_schema.query_response_time
+            - --collect.info_schema.userstats
+            - --collect.perf_schema.eventsstatements
             - --collect.perf_schema.eventswaits
+            - --collect.perf_schema.file_events
             - --collect.perf_schema.indexiowaits
+            - --collect.perf_schema.memory_events
             - --collect.perf_schema.tableiowaits
             - --collect.perf_schema.tablelocks
 
@@ -72,6 +94,10 @@ services:
             - mysql-network
         ports:
             - 3306:3306
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
         restart: always
 
 volumes:
