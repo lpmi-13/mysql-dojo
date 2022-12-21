@@ -5,6 +5,7 @@ I recently realized that I have very little experience with MySQL, and I'd like 
 ## Aims/Goals
 
 - see what a MySQL database looks like under regular load (write heavy for my use case, but also some reads).
+- set up a scenario where we need to add/delete indexes
 - see what the performance implications are for partitioned tables
 - see what the performance implications are for missing indexes
 - see what long-running queries look like in the systems graphs
