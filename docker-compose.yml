@@ -16,7 +16,7 @@ services:
             - mysql-network
         ports:
             - 9090:9090
-        restart: always
+        restart: unless-stopped
 
     grafana:
         container_name: grafana
@@ -33,7 +33,7 @@ services:
             - ./grafana/provisioning:/etc/grafana/provisioning
         environment:
             - GF_INSTALL_PLUGINS=natel-discrete-panel,digiapulssi-breadcrumb-panel,yesoreyeram-boomtable-panel
-        restart: always
+        restart: unless-stopped
 
     cadvisor:
         container_name: cadvisor
@@ -98,7 +98,7 @@ services:
             nofile:
                 soft: 65536
                 hard: 65536
-        restart: always
+        restart: unless-stopped
 
 volumes:
     grafana_data: {}
