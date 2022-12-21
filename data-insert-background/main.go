@@ -46,6 +46,8 @@ func main() {
 			log.Println("created record:", i*BatchSize)
 		}
 	}
+
+	log.Println("all finished")
 }
 
 func InsertData() {
