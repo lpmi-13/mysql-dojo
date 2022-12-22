@@ -37,7 +37,11 @@ services:
 
     cadvisor:
         container_name: cadvisor
-        image: google/cadvisor
+        # for whatever reason the :latest tag isn't multi-arch, so using this tag for M1 compatibility
+        image: gcr.io/cadvisor/cadvisor:v0.46.0
+        privileged: true
+        devices:
+            - /dev/kmsg:/dev/kmsg
         networks:
             - mysql-network
         volumes:
@@ -45,10 +49,12 @@ services:
             - /var/run:/var/run:rw
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
+            - /etc/machine-id:/etc/machine-id:ro
+            - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
         expose:
             - 8080
         ports:
-            - "8005:8080"
+            - "8080:8080"
 
     mysql-exporter:
         container_name: mysql-exporter
