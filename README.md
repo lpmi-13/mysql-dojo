@@ -33,3 +33,8 @@ docker-compose up -d
 and your dashboards should be available at `localhost:3000`.
 
 To insert some data, run the data insert container at `data-insert-background` via `docker-compose up --build`.
+
+
+## TODO
+
+Keep updating the grafana dashboards to show useful stuff like https://sysdig.com/blog/mysql-monitoring/
